@@ -7,8 +7,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.moddiscovery.NightConfigWrapper;
 import net.neoforged.neoforgespi.language.IConfigurable;
-import net.ramixin.dynamo.neoforge.networking.ClientNetworkingImpl;
-import net.ramixin.dynamo.neoforge.networking.NetworkingImpl;
+import net.ramixin.dynamo.neoforge.registry.ClientRegistrationImpl;
 import net.ramixin.dynamo.neoforge.registry.RegistrationImpl;
 import net.ramixin.stator.StatorClientInitializer;
 import net.ramixin.stator.StatorInitializer;
@@ -60,9 +59,8 @@ public class Dynamo {
             }
         }
         RegistrationImpl.attachAllEntries(bus);
+        RegistrationImpl.finalizePayloads(bus);
         RegistrationImpl.freeze();
-        NetworkingImpl.finalizePayloads(bus);
-        NetworkingImpl.freeze();
     }
 
     private static void findEntrypoints(String entrypoint, NightConfigWrapper config, String modId, Consumer<Object> applicator) {
@@ -103,8 +101,9 @@ public class Dynamo {
                 throw error(entry.getKey(), new RuntimeException("Failed to run client initialization: ", e));
             }
         }
-        ClientNetworkingImpl.finalizeHandlers(bus);
-        ClientNetworkingImpl.freeze();
+        ClientRegistrationImpl.finalizeHandlers(bus);
+        ClientRegistrationImpl.finalizeScreens(bus);
+        ClientRegistrationImpl.freeze();
     }
 
 }
